@@ -6,3 +6,11 @@ db:
   username: "masha"
   dbname: "postgres"
   sslmode: "disable"
+redis:
+  host: "redis"
+  addr: "localhost"
+  port: 6379
+  dbname: "session"
+  password: "12345"
+session:
+  expiresAt: 1
