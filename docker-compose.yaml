@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./
+    ports:
+      - '8080:8080'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "masha"
+      POSTGRES_PASSWORD: "12345v!"
+      PG_USER: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U masha -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
