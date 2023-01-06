@@ -28,10 +28,17 @@ func InitRoutes(handlers *handlers.Handlers, middleware *middleware.Middleware) 
 
 	servicesGroup := adminGroup.Group("/services")
 	servicesGroup.GET("/:id", handlers.ServicesHandler.GetService, middleware.AdminSession.Auth)
+	servicesGroup.GET("/", handlers.ServicesHandler.GetServices, middleware.AdminSession.Auth)
 	servicesGroup.POST("/", handlers.ServicesHandler.CreateService, middleware.AdminSession.Auth)
 	servicesGroup.PUT("/", handlers.ServicesHandler.UpdateService, middleware.AdminSession.Auth)
 	servicesGroup.DELETE("/:id", handlers.ServicesHandler.DeleteService, middleware.AdminSession.Auth)
 
+	employersGroup := adminGroup.Group("/employers")
+	employersGroup.GET("/:id", handlers.EmployersHandler.GetEmployer, middleware.AdminSession.Auth)
+	employersGroup.GET("/", handlers.EmployersHandler.GetEmployers, middleware.AdminSession.Auth)
+	employersGroup.POST("/", handlers.EmployersHandler.CreateEmployer, middleware.AdminSession.Auth)
+	employersGroup.PUT("/", handlers.EmployersHandler.UpdateEmployer, middleware.AdminSession.Auth)
+	employersGroup.DELETE("/:id", handlers.EmployersHandler.DeleteEmployer, middleware.AdminSession.Auth)
 
 	return router
 }

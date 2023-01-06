@@ -11,21 +11,21 @@ import (
 	"github.com/v.kirpichov/admin/pkg/errorHandler"
 )
 
-type ServicesHandler struct {
-	usecase usecase.ServicesU
+type EmployersHandler struct {
+	usecase usecase.EmployerU
 }
 
-func NewServicesUsecase(usecase usecase.ServicesU) *ServicesHandler {
-	return &ServicesHandler{
+func NewEmployersHandler(usecase usecase.EmployerU) *EmployersHandler {
+	return &EmployersHandler{
 		usecase: usecase,
 	}
 }
 
-type GetServiceResponse struct {
-	Service *models.Service `json:"service"`
+type GetEmployerResponse struct {
+	Employer *models.Employer `json:"employer"`
 }
 
-func (s *ServicesHandler) GetService(c echo.Context) error {
+func (e *EmployersHandler) GetEmployer(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	idStr := c.Param("id")
@@ -35,46 +35,46 @@ func (s *ServicesHandler) GetService(c echo.Context) error {
 		return errorHandler.ErrClient
 	}
 
-	service, err := s.usecase.GetService(ctx, int64(id))
+	employer, err := e.usecase.GetEmployer(ctx, int64(id))
 	if err != nil {
 		return errorHandler.NewInternalServerError(err.Error())
 	}
 
-	c.JSON(http.StatusOK, &GetServiceResponse{
-		Service: service,
+	c.JSON(http.StatusOK, &GetEmployerResponse{
+		Employer: employer,
 	})
 
 	return nil
 }
 
-type GetServicesResponse struct {
-	Services []*models.Service `json:"services"`
+type GetEmployersResponse struct {
+	Employers []*models.Employer `json:"employers"`
 }
 
-func (s *ServicesHandler) GetServices(c echo.Context) error {
+func (e *EmployersHandler) GetEmployers(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	services, err := s.usecase.GetServices(ctx)
+	employers, err := e.usecase.GetEmployers(ctx)
 	if err != nil {
 		return errorHandler.NewInternalServerError(err.Error())
 	}
 
-	c.JSON(http.StatusOK, &GetServicesResponse{
-		Services: services,
+	c.JSON(http.StatusOK, &GetEmployersResponse{
+		Employers: employers,
 	})
 
 	return nil
 }
 
-type CreateServiceRequest struct {
+type CreateEmployerRequest struct {
 	Name string `json:"name"`
 }
 
-type CreateServiceResponse struct {
+type CreateEmployerResponse struct {
 	Id int64 `json:"id"`
 }
 
-func (s *ServicesHandler) CreateService(c echo.Context) error {
+func (e *EmployersHandler) CreateEmployer(c echo.Context) error {
 	req := &CreateServiceRequest{}
 	ctx := c.Request().Context()
 
@@ -83,7 +83,7 @@ func (s *ServicesHandler) CreateService(c echo.Context) error {
 		return errorHandler.ErrClient
 	}
 
-	id, err := s.usecase.CreateService(ctx, &models.Service{
+	id, err := e.usecase.CreateEmployer(ctx, &models.Employer{
 		Id:   0,
 		Name: req.Name,
 	})
@@ -91,15 +91,15 @@ func (s *ServicesHandler) CreateService(c echo.Context) error {
 		return errorHandler.NewInternalServerError(err.Error())
 	}
 
-	c.JSON(http.StatusOK, &CreateServiceResponse{
+	c.JSON(http.StatusOK, &CreateEmployerResponse{
 		Id: id,
 	})
 
 	return nil
 }
 
-func (s *ServicesHandler) UpdateService(c echo.Context) error {
-	req := &models.Service{}
+func (e *EmployersHandler) UpdateEmployer(c echo.Context) error {
+	req := &models.Employer{}
 	ctx := c.Request().Context()
 
 	err := json.NewDecoder(c.Request().Body).Decode(req)
@@ -107,7 +107,7 @@ func (s *ServicesHandler) UpdateService(c echo.Context) error {
 		return errorHandler.ErrClient
 	}
 
-	err = s.usecase.UpdateService(ctx, req)
+	err = e.usecase.UpdateEmployer(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func (s *ServicesHandler) UpdateService(c echo.Context) error {
 	return nil
 }
 
-func (s *ServicesHandler) DeleteService(c echo.Context) error {
+func (e *EmployersHandler) DeleteEmployer(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	idStr := c.Param("id")
@@ -125,7 +125,7 @@ func (s *ServicesHandler) DeleteService(c echo.Context) error {
 		return errorHandler.ErrClient
 	}
 
-	err = s.usecase.DeleteService(ctx, int64(id))
+	err = e.usecase.DeleteEmployer(ctx, int64(id))
 	if err != nil {
 		return err
 	}

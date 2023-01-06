@@ -10,18 +10,21 @@ import (
 )
 
 type Repository struct {
-	Users         UserR
-	Admins        AdminR
-	Services      ServiesR
-	Sessions      SessionR
-	AdminSessions SessionR
+	Users               UserR
+	Admins              AdminR
+	Services            ServiesR
+	Sessions            SessionR
+	AdminSessions       SessionR
+	EmployersRepository EmployerR
 }
 
 func NewRepository(db *sqlx.DB, client *redis.Client, adminClient *redis.Client) *Repository {
 	return &Repository{
-		Users:         NewUsersRepository(db),
-		Admins:        NewAdminRepository(db),
-		Services:      NewServicesRepository(db),
+		Users:               NewUsersRepository(db),
+		Admins:              NewAdminRepository(db),
+		Services:            NewServicesRepository(db),
+		EmployersRepository: NewEmployersRepository(db),
+
 		Sessions:      NewSessionRepository(client),
 		AdminSessions: NewSessionRepository(adminClient),
 	}
@@ -45,7 +48,16 @@ type SessionR interface {
 
 type ServiesR interface {
 	GetService(ctx context.Context, id int64) (*models.Service, error)
+	GetServices(ctx context.Context) ([]*models.Service, error)
 	CreateService(ctx context.Context, service *models.Service) (int64, error)
 	UpdateService(ctx context.Context, service *models.Service) error
 	DeleteService(ctx context.Context, id int64) error
+}
+
+type EmployerR interface {
+	GetEmployer(ctx context.Context, id int64) (*models.Employer, error)
+	GetEmployers(ctx context.Context) ([]*models.Employer, error)
+	CreateEmployer(ctx context.Context, employer *models.Employer) (int64, error)
+	UpdateEmployer(ctx context.Context, employer *models.Employer) error
+	DeleteEmployer(ctx context.Context, id int64) error
 }

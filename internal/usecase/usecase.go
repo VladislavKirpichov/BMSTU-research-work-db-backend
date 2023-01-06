@@ -9,16 +9,18 @@ import (
 )
 
 type Usecases struct {
-	UserUsecase    UserU
-	AdminUsecase   AdminU
-	ServiceUsecase ServicesU
+	UserUsecase       UserU
+	AdminUsecase      AdminU
+	ServiceUsecase    ServicesU
+	EmployersUsecases EmployerU
 }
 
 func NewUsecases(repository *repository.Repository, cfg *configs.Config) *Usecases {
 	return &Usecases{
-		UserUsecase:    NewUserUsecase(repository.Users, repository.Sessions, cfg),
-		AdminUsecase:   NewAdminUsecase(repository.Admins, repository.AdminSessions, cfg),
-		ServiceUsecase: NewServiceUsecase(repository.Services),
+		UserUsecase:       NewUserUsecase(repository.Users, repository.Sessions, cfg),
+		AdminUsecase:      NewAdminUsecase(repository.Admins, repository.AdminSessions, cfg),
+		ServiceUsecase:    NewServiceUsecase(repository.Services),
+		EmployersUsecases: NewEmployersUsecases(repository.EmployersRepository),
 	}
 }
 
@@ -43,7 +45,16 @@ type AdminU interface {
 
 type ServicesU interface {
 	GetService(ctx context.Context, id int64) (*models.Service, error)
+	GetServices(ctx context.Context) ([]*models.Service, error)
 	CreateService(ctx context.Context, service *models.Service) (int64, error)
 	UpdateService(ctx context.Context, service *models.Service) error
 	DeleteService(ctx context.Context, id int64) error
+}
+
+type EmployerU interface {
+	GetEmployer(ctx context.Context, id int64) (*models.Employer, error)
+	GetEmployers(ctx context.Context) ([]*models.Employer, error)
+	CreateEmployer(ctx context.Context, service *models.Employer) (int64, error)
+	UpdateEmployer(ctx context.Context, service *models.Employer) error
+	DeleteEmployer(ctx context.Context, id int64) error
 }

@@ -27,6 +27,15 @@ func (s *ServiceUsecase) GetService(ctx context.Context, id int64) (*models.Serv
 	return service, nil
 }
 
+func (s *ServiceUsecase) GetServices(ctx context.Context) ([]*models.Service, error) {
+	services, err := s.repo.GetServices(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return services, nil
+}
+
 func validateService(service *models.Service) error {
 	if len([]rune(service.Name)) > 30 {
 		return fmt.Errorf("Bad length")
