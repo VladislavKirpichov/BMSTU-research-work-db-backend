@@ -12,6 +12,7 @@ import (
 type Repository struct {
 	Users         UserR
 	Admins        AdminR
+	Services      ServiesR
 	Sessions      SessionR
 	AdminSessions SessionR
 }
@@ -20,6 +21,7 @@ func NewRepository(db *sqlx.DB, client *redis.Client, adminClient *redis.Client)
 	return &Repository{
 		Users:         NewUsersRepository(db),
 		Admins:        NewAdminRepository(db),
+		Services:      NewServicesRepository(db),
 		Sessions:      NewSessionRepository(client),
 		AdminSessions: NewSessionRepository(adminClient),
 	}
@@ -39,4 +41,11 @@ type SessionR interface {
 	CreateSession(value, token string, exirationTime time.Duration) error
 	GetSession(token string) (string, error)
 	DeleteSession(token string) error
+}
+
+type ServiesR interface {
+	GetService(ctx context.Context, id int64) (*models.Service, error)
+	CreateService(ctx context.Context, service *models.Service) (int64, error)
+	UpdateService(ctx context.Context, service *models.Service) error
+	DeleteService(ctx context.Context, id int64) error
 }

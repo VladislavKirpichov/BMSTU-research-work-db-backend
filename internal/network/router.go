@@ -26,5 +26,12 @@ func InitRoutes(handlers *handlers.Handlers, middleware *middleware.Middleware) 
 	adminGroup.POST("/signin", handlers.AdminHandler.SignIn)
 	adminGroup.GET("/users", handlers.UserHandler.GetAllUsers, middleware.AdminSession.Auth)
 
+	servicesGroup := adminGroup.Group("/services")
+	servicesGroup.GET("/:id", handlers.ServicesHandler.GetService, middleware.AdminSession.Auth)
+	servicesGroup.POST("/", handlers.ServicesHandler.CreateService, middleware.AdminSession.Auth)
+	servicesGroup.PUT("/", handlers.ServicesHandler.UpdateService, middleware.AdminSession.Auth)
+	servicesGroup.DELETE("/:id", handlers.ServicesHandler.DeleteService, middleware.AdminSession.Auth)
+
+
 	return router
 }

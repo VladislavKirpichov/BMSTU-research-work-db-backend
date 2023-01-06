@@ -9,14 +9,16 @@ import (
 )
 
 type Usecases struct {
-	UserUsecase  UserU
-	AdminUsecase AdminU
+	UserUsecase    UserU
+	AdminUsecase   AdminU
+	ServiceUsecase ServicesU
 }
 
 func NewUsecases(repository *repository.Repository, cfg *configs.Config) *Usecases {
 	return &Usecases{
-		UserUsecase:  NewUserUsecase(repository.Users, repository.Sessions, cfg),
-		AdminUsecase: NewAdminUsecase(repository.Admins, repository.AdminSessions, cfg),
+		UserUsecase:    NewUserUsecase(repository.Users, repository.Sessions, cfg),
+		AdminUsecase:   NewAdminUsecase(repository.Admins, repository.AdminSessions, cfg),
+		ServiceUsecase: NewServiceUsecase(repository.Services),
 	}
 }
 
@@ -37,4 +39,11 @@ type AdminU interface {
 	SessionUsecase
 
 	SignIn(ctx context.Context, admin *models.Admin) error
+}
+
+type ServicesU interface {
+	GetService(ctx context.Context, id int64) (*models.Service, error)
+	CreateService(ctx context.Context, service *models.Service) (int64, error)
+	UpdateService(ctx context.Context, service *models.Service) error
+	DeleteService(ctx context.Context, id int64) error
 }
