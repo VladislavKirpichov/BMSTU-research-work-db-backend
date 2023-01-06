@@ -8,9 +8,17 @@ db:
   sslmode: "disable"
 redis:
   host: "redis"
-  addr: "localhost"
+  addr: "redis_users"
   port: 6379
   dbname: "session"
-  password: "12345"
+  password: "test"
+redis_admin:
+  host: "redis"
+  addr: "redis_admin"
+  port: 6380
+  dbname: "session"
+  password: "admin"
 session:
-  expiresAt: 1
+  expiresAt: 696
+adminSession:
+  expiresAt: 24

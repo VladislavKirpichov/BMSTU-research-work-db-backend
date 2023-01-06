@@ -1,16 +1,40 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/v.kirpichov/admin/configs"
+	"github.com/v.kirpichov/admin/internal/enitity/models"
 	"github.com/v.kirpichov/admin/internal/repository"
 )
 
 type Usecases struct {
-	UserUsecase UserUsecase
+	UserUsecase  UserU
+	AdminUsecase AdminU
 }
 
 func NewUsecases(repository *repository.Repository, cfg *configs.Config) *Usecases {
 	return &Usecases{
-		UserUsecase: *NewUserUsecase(&repository.Users, cfg),
+		UserUsecase:  NewUserUsecase(repository.Users, repository.Sessions, cfg),
+		AdminUsecase: NewAdminUsecase(repository.Admins, repository.AdminSessions, cfg),
 	}
+}
+
+type SessionUsecase interface {
+	GetSessionToken(ctx context.Context, key string) (string, error)
+	Logout(ctx context.Context, key string) error
+}
+
+type UserU interface {
+	SessionUsecase
+
+	SignIn(ctx context.Context, user *models.SignInUser) (*models.User, error)
+	SignUp(ctx context.Context, user *models.InputUser) (int64, error)
+	GetAllUsers(ctx context.Context) ([]*models.User, error)
+}
+
+type AdminU interface {
+	SessionUsecase
+
+	SignIn(ctx context.Context, admin *models.Admin) error
 }

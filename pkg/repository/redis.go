@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/go-redis/redis"
@@ -9,7 +10,7 @@ import (
 
 func NewRedisRepository(cfg *configs.RedisConfig) (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:     strings.Join([]string{cfg.Addr, cfg.Host}, ":"),
+		Addr:     strings.Join([]string{cfg.Addr, strconv.Itoa(cfg.Port)}, ":"),
 		Password: cfg.Password,
 	})
 

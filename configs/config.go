@@ -9,10 +9,12 @@ import (
 )
 
 type Config struct {
-	Port          uint          `yaml:"port"`
-	DBConfig      DBConfig      `yaml:"db"`
-	RedisConfig   RedisConfig   `yaml:"redis"`
-	SessionConfig SessionConfig `yaml:"session"`
+	Port               uint          `yaml:"port"`
+	DBConfig           DBConfig      `yaml:"db"`
+	RedisConfig        RedisConfig   `yaml:"redis"`
+	AdminRedisConfig   RedisConfig   `yaml:"redis_admin"`
+	SessionConfig      SessionConfig `yaml:"session"`
+	AdminSessionConfig SessionConfig `yaml:"adminSession"`
 }
 
 type DBConfig struct {

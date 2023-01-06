@@ -17,10 +17,9 @@ func NewUsersRepository(db *sqlx.DB) *UsersRepository {
 }
 
 func (u *UsersRepository) CreateUser(ctx context.Context, user *models.InputUser) (int64, error) {
-	query := fmt.Sprintf(`INSERT INTO users (name, password) VALUES ($1, $2) RETURNING id`)
+	query := fmt.Sprintf(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`)
 
-	fmt.Println(user.Password)
-	row := u.db.QueryRowContext(ctx, query, user.Name, user.Password)
+	row := u.db.QueryRowContext(ctx, query, user.Name, user.Email, user.Password)
 
 	var id int64
 	if err := row.Scan(&id); err != nil {
@@ -31,8 +30,8 @@ func (u *UsersRepository) CreateUser(ctx context.Context, user *models.InputUser
 }
 
 func (u *UsersRepository) GetUsers(ctx context.Context) ([]*models.User, error) {
-	query := `SELECT id, name FROM users`
-	
+	query := `SELECT id, email, name FROM users`
+
 	res, err := u.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -43,7 +42,7 @@ func (u *UsersRepository) GetUsers(ctx context.Context) ([]*models.User, error) 
 
 	for res.Next() {
 		var user models.User
-		if err := res.Scan(&user.Id, &user.Name); err != nil {
+		if err := res.Scan(&user.Id, &user.Email, &user.Name); err != nil {
 			return nil, err
 		}
 
@@ -55,4 +54,24 @@ func (u *UsersRepository) GetUsers(ctx context.Context) ([]*models.User, error) 
 	}
 
 	return users, nil
+}
+
+func (u *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	query := `SELECT id, name, email, password
+			  FROM users AS u WHERE u.email=$1`
+
+	row := u.db.QueryRowxContext(ctx, query, email)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	user := &models.User{}
+
+	// https://jmoiron.github.io/sqlx/#advancedScanning
+	err := row.StructScan(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
