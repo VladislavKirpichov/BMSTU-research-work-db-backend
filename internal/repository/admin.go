@@ -27,7 +27,7 @@ func MustInitAdmins(db *sqlx.DB) error {
 
 	err := db.QueryRow(query, adminUsername, adminPassword).Err()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	return nil
@@ -49,4 +49,30 @@ func (a *AdminRepository) GetAdmin(ctx context.Context, username, password strin
 	}
 
 	return admin, nil
+}
+
+func (a *AdminRepository) GetAllApplies(ctx context.Context) ([]*models.ApplyWithData, error) {
+	query := `SELECT applies.id, applies.user_id, users.email, applies.service_id, services.name
+		FROM applies
+	    JOIN users ON users.id=applies.user_id
+		JOIN services ON services.id=applies.service_id`
+
+	rows, err := a.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	applies := make([]*models.ApplyWithData, 0)
+
+	for rows.Next() {
+		var apply models.ApplyWithData
+		if err := rows.Scan(&apply.Id, &apply.UserId, &apply.Email, &apply.ServiceId, &apply.ServiceName); err != nil {
+			return nil, err
+		}
+
+		applies = append(applies, &apply)
+	}
+
+	return applies, nil
 }

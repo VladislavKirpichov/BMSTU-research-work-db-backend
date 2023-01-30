@@ -98,6 +98,36 @@ func (s *ServicesHandler) CreateService(c echo.Context) error {
 	return nil
 }
 
+type ApplyServiceRequest struct {
+	UserId    int64 `json:"user_id"`
+	ServiceId int64 `json:"service_id"`
+}
+
+type ApplyServiceResponse struct {
+	Id int64 `json:"id"`
+}
+
+func (s *ServicesHandler) Apply(c echo.Context) error {
+	ctx := c.Request().Context()
+	req := &ApplyServiceRequest{}
+
+	err := json.NewDecoder(c.Request().Body).Decode(req)
+	if err != nil {
+		return errorHandler.ErrClient
+	}
+
+	id, err := s.usecase.Apply(ctx, req.UserId, req.ServiceId)
+	if err != nil {
+		return errorHandler.NewInternalServerError(err.Error())
+	}
+
+	c.JSON(http.StatusOK, &ApplyServiceResponse{
+		Id: id,
+	})
+
+	return nil
+}
+
 func (s *ServicesHandler) UpdateService(c echo.Context) error {
 	req := &models.Service{}
 	ctx := c.Request().Context()

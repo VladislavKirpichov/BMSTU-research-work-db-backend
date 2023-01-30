@@ -44,6 +44,26 @@ func (a *AdminUsecase) GetSessionToken(ctx context.Context, username string) (st
 	return token, nil
 }
 
+func (a *AdminUsecase) Auth(ctx context.Context, token string) (*models.Admin, error) {
+	username, err := a.sessionsRepo.GetSession(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return &models.Admin{
+		Username: username,
+	}, nil
+}
+
 func (a *AdminUsecase) Logout(ctx context.Context, username string) error {
 	return a.sessionsRepo.DeleteSession(username)
+}
+
+func (a *AdminUsecase) GetAllApplies(ctx context.Context) ([]*models.ApplyWithData, error) {
+	applies, err := a.adminsRepo.GetAllApplies(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return applies, nil
 }

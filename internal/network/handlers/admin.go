@@ -58,3 +58,39 @@ func (a *AdminHandler) SignIn(c echo.Context) error {
 	c.NoContent(http.StatusOK)
 	return nil
 }
+
+func (a *AdminHandler) Auth(c echo.Context) error {
+	cookies := c.Cookies()
+	ctx := c.Request().Context()
+
+	for _, cookie := range cookies {
+		if cookie.Name == "admin_session" {
+			if _, err := a.adminUsecase.Auth(ctx, cookie.Value); err != nil {
+				return errorHandler.ErrInvalidSession
+			} else {
+				return nil
+			}
+		}
+	}
+
+	return errorHandler.ErrInvalidSession
+}
+
+type AppliesResponse struct {
+	Applies []*models.ApplyWithData `json:"applies,omitempty"`
+}
+
+func (a *AdminHandler) Applies(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	applies, err := a.adminUsecase.GetAllApplies(ctx)
+	if err != nil {
+		return errorHandler.ErrInternal
+	}
+
+	c.JSON(http.StatusOK, &AppliesResponse{
+		Applies: applies,
+	})
+
+	return nil
+}

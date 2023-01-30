@@ -17,9 +17,7 @@ func NewSessionRepository(client *redis.Client) *SessionRepository {
 
 func (s *SessionRepository) CreateSession(value, token string, exirationTime time.Duration) error {
 	status := s.client.Set(token, interface{}(value), exirationTime)
-	if status.Err() == redis.Nil {
-		return fmt.Errorf("error when creating session: %w", status.Err())
-	} else if status.Err() != nil {
+	if status.Err() == redis.Nil || status.Err() != nil {
 		return fmt.Errorf("error when creating session: %w", status.Err())
 	}
 
@@ -29,10 +27,8 @@ func (s *SessionRepository) CreateSession(value, token string, exirationTime tim
 func (s *SessionRepository) GetSession(token string) (string, error) {
 	email := s.client.Get(token)
 
-	if email.Err() == redis.Nil {
+	if email.Err() == redis.Nil || email.Err() != nil {
 		return "", fmt.Errorf("token doesnt exists")
-	} else if email.Err() != nil {
-		return "", email.Err()
 	}
 
 	return email.String(), nil

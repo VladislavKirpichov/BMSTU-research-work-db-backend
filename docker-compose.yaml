@@ -29,6 +29,14 @@ services:
       timeout: 3s
       retries: 5
 
+  # migration:
+  #   image: backend:latest
+  #   command: migrate -path ./shema -database 'postgres://masha:12345v!@localhost:5432/postgres?sslmode=disable' up
+  #   links: 
+  #     - postgres
+  #   depends_on:
+  #     - postgres
+
   redis_users:
     image: redis:latest
     container_name: users_sessions

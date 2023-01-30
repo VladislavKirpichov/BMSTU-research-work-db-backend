@@ -80,10 +80,29 @@ func (u *UserUsecase) GetSessionToken(ctx context.Context, email string) (string
 	return token, nil
 }
 
+func (u *UserUsecase) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	user, err := u.usersRepository.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
 func (u *UserUsecase) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 	return u.usersRepository.GetUsers(ctx)
 }
 
 func (u *UserUsecase) Logout(ctx context.Context, email string) error {
 	return u.sessionRepository.DeleteSession(email)
+}
+
+func (u *UserUsecase) GetAppliesByUser(ctx context.Context, userId int64) ([]*models.Application, error) {
+	applies, err := u.usersRepository.GetAppliesByUser(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return applies, nil
 }

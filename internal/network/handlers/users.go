@@ -104,6 +104,38 @@ func (u *UserHandler) SignUp(c echo.Context) error {
 	return nil
 }
 
+type AuthResponse struct {
+	Profile *models.User
+}
+
+func (u *UserHandler) Auth(c echo.Context) error {
+	cookies := c.Cookies()
+	ctx := c.Request().Context()
+
+	for _, cookie := range cookies {
+		if cookie.Name == "session" {
+			email, err := u.usecase.GetSessionToken(ctx, cookie.Value)
+			if err != nil {
+				return errorHandler.ErrInvalidSession
+			} else {
+				profile, err := u.usecase.GetUserByEmail(ctx, email)
+
+				if err != nil {
+					return errorHandler.NewInternalServerError(err.Error())
+				}
+
+				c.JSON(http.StatusOK, &AuthResponse{
+					Profile: profile,
+				})
+
+				return nil
+			}
+		}
+	}
+
+	return errorHandler.ErrInvalidSession
+}
+
 type UsersResponse struct {
 	Users []*models.User
 }

@@ -70,6 +70,19 @@ func (s *ServicesRepository) CreateService(ctx context.Context, service *models.
 	return id, nil
 }
 
+func (s *ServicesRepository) Apply(ctx context.Context, userId, serviceId int64) (int64, error) {
+	query := `INSERT INTO applies (user_id, service_id) VALUES ($1, $2) RETURNING id`
+
+	row := s.db.QueryRowContext(ctx, query, userId, serviceId)
+
+	var id int64
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 func (s *ServicesRepository) UpdateService(ctx context.Context, service *models.Service) error {
 	query := `UPDATE services SET name=$1 WHERE services.id=$2`
 

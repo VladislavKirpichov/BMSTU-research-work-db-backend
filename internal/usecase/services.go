@@ -58,6 +58,15 @@ func (s *ServiceUsecase) CreateService(ctx context.Context, service *models.Serv
 	return id, err
 }
 
+func (s *ServiceUsecase) Apply(ctx context.Context, userId, serviceId int64) (int64, error) {
+	id, err := s.repo.Apply(ctx, userId, serviceId)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
 func (s *ServiceUsecase) UpdateService(ctx context.Context, service *models.Service) error {
 	err := validateService(service)
 	if err != nil {

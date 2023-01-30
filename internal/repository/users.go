@@ -75,3 +75,30 @@ func (u *UsersRepository) GetUserByEmail(ctx context.Context, email string) (*mo
 
 	return user, nil
 }
+
+func (u *UsersRepository) GetAppliesByUser(ctx context.Context, userId int64) ([]*models.Application, error) {
+	query := `SELECT id, user_id, service_id FROM applies WHERE applies.user_id = $1`
+
+	res, err := u.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Close()
+
+	applications := make([]*models.Application, 0)
+
+	for res.Next() {
+		var application models.Application
+		if err := res.Scan(&application.Id, &application.UserId, &application.ServiceId); err != nil {
+			return nil, err
+		}
+
+		applications = append(applications, &application)
+	}
+
+	if res.Err() != nil {
+		return nil, res.Err()
+	}
+
+	return applications, nil
+}

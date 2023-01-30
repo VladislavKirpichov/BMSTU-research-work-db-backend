@@ -10,6 +10,7 @@ type Handlers struct {
 	AdminHandler     *AdminHandler
 	ServicesHandler  *ServicesHandler
 	EmployersHandler *EmployersHandler
+	ReportsHandler   *ReportsHandler
 }
 
 func NewHandlers(usecases *usecase.Usecases, cfg *configs.Config) *Handlers {
@@ -18,5 +19,6 @@ func NewHandlers(usecases *usecase.Usecases, cfg *configs.Config) *Handlers {
 		AdminHandler:     NewAdminHandler(usecases.AdminUsecase, cfg),
 		ServicesHandler:  NewServicesUsecase(usecases.ServiceUsecase),
 		EmployersHandler: NewEmployersHandler(usecases.EmployersUsecases),
+		ReportsHandler:   NewReportsHandler(usecases.ReportsUsecase),
 	}
 }
