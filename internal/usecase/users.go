@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -96,6 +97,25 @@ func (u *UserUsecase) GetAllUsers(ctx context.Context) ([]*models.User, error) {
 
 func (u *UserUsecase) Logout(ctx context.Context, email string) error {
 	return u.sessionRepository.DeleteSession(email)
+}
+
+func (u *UserUsecase) Auth(ctx context.Context, token string) (*models.User, error) {
+	fmt.Println(token)
+
+	wtf, err := u.sessionRepository.GetSession(token)
+	if err != nil {
+		return nil, err
+	}
+
+	str := strings.Split(wtf, " ")
+	fmt.Println("Auth", str[2])
+
+	user, err := u.usersRepository.GetUserByEmail(ctx, str[2])
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (u *UserUsecase) GetAppliesByUser(ctx context.Context, userId int64) ([]*models.Application, error) {

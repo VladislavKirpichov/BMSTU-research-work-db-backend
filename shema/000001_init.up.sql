@@ -16,6 +16,8 @@ CREATE TABLE admins
 CREATE TABLE services
 (
     id serial not null unique primary key,
+    cost int not null default 0,
+    description varchar(255),
     name varchar(255) not null
 );
 

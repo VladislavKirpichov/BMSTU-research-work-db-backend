@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -70,16 +69,20 @@ func (u *UserHandler) SignIn(c echo.Context) error {
 	return nil
 }
 
+type SignUpResponse struct {
+	Id int64 `json:"id"`
+}
+
 func (u *UserHandler) SignUp(c echo.Context) error {
 	var input = models.InputUser{}
 
-	sessinToken, err := u.usecase.GetSessionToken(c.Request().Context(), input.Email)
+	err := json.NewDecoder(c.Request().Body).Decode(&input)
 	if err != nil {
 		c.Error(err)
 		return err
 	}
 
-	err = json.NewDecoder(c.Request().Body).Decode(&input)
+	sessinToken, err := u.usecase.GetSessionToken(c.Request().Context(), input.Email)
 	if err != nil {
 		c.Error(err)
 		return err
@@ -100,12 +103,14 @@ func (u *UserHandler) SignUp(c echo.Context) error {
 	}
 
 	c.SetCookie(sessionCookie)
-	c.String(http.StatusOK, strconv.Itoa(int(userId)))
+	c.JSON(http.StatusOK, &SignUpResponse{
+		Id: userId,
+	})
 	return nil
 }
 
 type AuthResponse struct {
-	Profile *models.User
+	Profile *models.User `json:"profile"`
 }
 
 func (u *UserHandler) Auth(c echo.Context) error {
@@ -114,22 +119,16 @@ func (u *UserHandler) Auth(c echo.Context) error {
 
 	for _, cookie := range cookies {
 		if cookie.Name == "session" {
-			email, err := u.usecase.GetSessionToken(ctx, cookie.Value)
+			user, err := u.usecase.Auth(ctx, cookie.Value)
 			if err != nil {
 				return errorHandler.ErrInvalidSession
-			} else {
-				profile, err := u.usecase.GetUserByEmail(ctx, email)
-
-				if err != nil {
-					return errorHandler.NewInternalServerError(err.Error())
-				}
-
-				c.JSON(http.StatusOK, &AuthResponse{
-					Profile: profile,
-				})
-
-				return nil
 			}
+
+			c.JSON(http.StatusOK, &AuthResponse{
+				Profile: user,
+			})
+
+			return nil
 		}
 	}
 

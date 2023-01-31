@@ -19,7 +19,7 @@ func NewServicesRepository(db *sqlx.DB) *ServicesRepository {
 }
 
 func (s *ServicesRepository) GetService(ctx context.Context, id int64) (*models.Service, error) {
-	query := `SELECT id, name FROM services WHERE services.id=$1`
+	query := `SELECT id, name, cost, description FROM services WHERE services.id=$1`
 
 	row := s.db.QueryRowContext(ctx, query, id)
 	if row.Err() != nil {
@@ -27,7 +27,7 @@ func (s *ServicesRepository) GetService(ctx context.Context, id int64) (*models.
 	}
 
 	service := &models.Service{}
-	if err := row.Scan(&service.Id, &service.Name); err != nil {
+	if err := row.Scan(&service.Id, &service.Name, &service.Cost, &service.Description); err != nil {
 		return nil, err
 	}
 
@@ -35,7 +35,7 @@ func (s *ServicesRepository) GetService(ctx context.Context, id int64) (*models.
 }
 
 func (s *ServicesRepository) GetServices(ctx context.Context) ([]*models.Service, error) {
-	query := `SELECT id, name FROM services`
+	query := `SELECT id, name, cost, description FROM services`
 
 	rows, err := s.db.QueryContext(ctx, query)
 	if err != nil {
@@ -47,7 +47,7 @@ func (s *ServicesRepository) GetServices(ctx context.Context) ([]*models.Service
 
 	for rows.Next() {
 		var service models.Service
-		if err := rows.Scan(&service.Id, &service.Name); err != nil {
+		if err := rows.Scan(&service.Id, &service.Name, &service.Cost, &service.Description); err != nil {
 			return nil, err
 		}
 
@@ -58,9 +58,9 @@ func (s *ServicesRepository) GetServices(ctx context.Context) ([]*models.Service
 }
 
 func (s *ServicesRepository) CreateService(ctx context.Context, service *models.Service) (int64, error) {
-	query := `INSERT INTO services (name) VALUES ($1) RETURNING id`
+	query := `INSERT INTO services (name, cost, description) VALUES ($1, $2, $3) RETURNING id`
 
-	row := s.db.QueryRowContext(ctx, query, service.Name)
+	row := s.db.QueryRowContext(ctx, query, service.Name, service.Cost, service.Description)
 
 	var id int64
 	if err := row.Scan(&id); err != nil {
@@ -84,9 +84,13 @@ func (s *ServicesRepository) Apply(ctx context.Context, userId, serviceId int64)
 }
 
 func (s *ServicesRepository) UpdateService(ctx context.Context, service *models.Service) error {
-	query := `UPDATE services SET name=$1 WHERE services.id=$2`
+	query := `UPDATE services
+		SET name=$1
+		SET cost=$2
+		SET description=$3
+		WHERE services.id=$4`
 
-	res, err := s.db.ExecContext(ctx, query, service.Name, service.Id)
+	res, err := s.db.ExecContext(ctx, query, service.Name, service.Cost, service.Description,  service.Id)
 	if err != nil {
 		return err
 	}

@@ -34,6 +34,7 @@ type SessionUsecase interface {
 type UserU interface {
 	SessionUsecase
 
+	Auth(ctx context.Context, token string) (*models.User, error)
 	SignIn(ctx context.Context, user *models.SignInUser) (*models.User, error)
 	SignUp(ctx context.Context, user *models.InputUser) (int64, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
