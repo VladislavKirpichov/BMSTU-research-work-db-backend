@@ -37,6 +37,7 @@ func InitRoutes(handlers *handlers.Handlers, middleware *middleware.Middleware) 
 	adminGroup.GET("/users", handlers.UserHandler.GetAllUsers, middleware.AdminSession.Auth)
 	adminGroup.GET("/auth", handlers.AdminHandler.Auth)
 	adminGroup.GET("/applies/", handlers.AdminHandler.Applies, middleware.AdminSession.Auth)
+	adminGroup.	("/logout", handlers.AdminHandler.Logout)
 
 	servicesGroup := adminGroup.Group("/services")
 	servicesGroup.GET("/:id", handlers.ServicesHandler.GetService, middleware.AdminSession.Auth)

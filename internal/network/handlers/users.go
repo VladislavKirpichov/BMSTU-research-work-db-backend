@@ -100,6 +100,7 @@ func (u *UserHandler) SignUp(c echo.Context) error {
 		Expires:  time.Now().Add(time.Duration(u.cfg.SessionConfig.ExpiresAt * int(time.Hour.Nanoseconds()))),
 		Secure:   true,
 		HttpOnly: true,
+		Path:     "/",
 	}
 
 	c.SetCookie(sessionCookie)

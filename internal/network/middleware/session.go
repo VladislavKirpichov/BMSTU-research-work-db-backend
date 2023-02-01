@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 	"github.com/v.kirpichov/admin/internal/repository"
 	"github.com/v.kirpichov/admin/pkg/errorHandler"
@@ -22,6 +24,7 @@ func (s *Session) Auth(next echo.HandlerFunc) echo.HandlerFunc {
 
 		for _, cookie := range cookies {
 			if cookie.Name == "session" {
+				fmt.Println(cookie.Value)
 				if _, err := s.sessionsRepo.GetSession(cookie.Value); err != nil {
 					return errorHandler.ErrInvalidSession
 				} else {

@@ -67,7 +67,9 @@ func (s *ServicesHandler) GetServices(c echo.Context) error {
 }
 
 type CreateServiceRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Cost        int64  `json:"cost"`
 }
 
 type CreateServiceResponse struct {
@@ -84,8 +86,10 @@ func (s *ServicesHandler) CreateService(c echo.Context) error {
 	}
 
 	id, err := s.usecase.CreateService(ctx, &models.Service{
-		Id:   0,
-		Name: req.Name,
+		Id:          0,
+		Name:        req.Name,
+		Description: req.Description,
+		Cost:        req.Cost,
 	})
 	if err != nil {
 		return errorHandler.NewInternalServerError(err.Error())

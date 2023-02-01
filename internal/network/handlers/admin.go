@@ -94,3 +94,21 @@ func (a *AdminHandler) Applies(c echo.Context) error {
 
 	return nil
 }
+
+func (a *AdminHandler) Logout(c echo.Context) error {
+	ctx := c.Request().Context()
+	cookies := c.Cookies()
+
+	for _, cookie := range cookies {
+		if cookie.Name == "admin_session" {
+			err := a.adminUsecase.Logout(ctx, cookie.Value)
+			if err != nil {
+				return errorHandler.ErrInternal
+			}
+
+			return nil
+		}
+	}
+
+	return errorHandler.ErrInvalidSession
+}
