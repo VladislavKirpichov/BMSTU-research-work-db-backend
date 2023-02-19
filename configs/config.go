@@ -9,8 +9,12 @@ import (
 )
 
 type Config struct {
-	Port     uint     `yaml:"port"`
-	DBConfig DBConfig `yaml:"db"`
+	Port               uint          `yaml:"port"`
+	DBConfig           DBConfig      `yaml:"db"`
+	RedisConfig        RedisConfig   `yaml:"redis"`
+	AdminRedisConfig   RedisConfig   `yaml:"redis_admin"`
+	SessionConfig      SessionConfig `yaml:"session"`
+	AdminSessionConfig SessionConfig `yaml:"adminSession"`
 }
 
 type DBConfig struct {
@@ -20,6 +24,18 @@ type DBConfig struct {
 	Password string `yaml:"password"`
 	DBName   string `yaml:"dbname"`
 	SSLMode  string `yaml:"sslmode"`
+}
+
+type RedisConfig struct {
+	Host     string `yaml:"host"`
+	Addr     string `yaml:"addr"`
+	Port     int    `yaml:"port"`
+	DBName   string `yaml:"dbname"`
+	Password string `yaml:"password"`
+}
+
+type SessionConfig struct {
+	ExpiresAt int `yaml:"expiresAt"`
 }
 
 const dbPasswordName = "DB_PASSWORD"

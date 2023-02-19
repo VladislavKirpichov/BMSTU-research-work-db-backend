@@ -6,3 +6,19 @@ db:
   username: "masha"
   dbname: "postgres"
   sslmode: "disable"
+redis:
+  host: "redis"
+  addr: "redis_users"
+  port: 6379
+  dbname: "session"
+  password: "test"
+redis_admin:
+  host: "redis"
+  addr: "redis_admin"
+  port: 6380
+  dbname: "session"
+  password: "admin"
+session:
+  expiresAt: 696
+adminSession:
+  expiresAt: 24

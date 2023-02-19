@@ -8,9 +8,14 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis_users:
+        condition: service_healthy
+      redis_admin:
+        condition: service_healthy
 
   postgres:
     image: postgres:latest
+    container_name: postgres
     environment:
       POSTGRES_DB: "postgres"
       POSTGRES_USER: "masha"
@@ -21,5 +26,37 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U masha -d postgres" ]
       interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # migration:
+  #   image: backend:latest
+  #   command: migrate -path ./shema -database 'postgres://masha:12345v!@localhost:5432/postgres?sslmode=disable' up
+  #   links: 
+  #     - postgres
+  #   depends_on:
+  #     - postgres
+
+  redis_users:
+    image: redis:latest
+    container_name: users_sessions
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass test
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli","ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis_admin:
+    image: redis:latest
+    container_name: admins_sessions
+    ports:
+      - "6380:6380"
+    command: redis-server --requirepass admin --port 6380
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli","ping" ]
+      interval: 10s
       timeout: 5s
       retries: 5
